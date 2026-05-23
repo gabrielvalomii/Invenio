@@ -8,3 +8,11 @@ class User(models.Model):
     
     def __str__(self):
         return f"({self.nome}, {self.CNPJ})"
+
+class Produto(models.Model):
+    nome_produto = models.CharField(max_length=255)
+    quantidade = models.IntegerField()
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    
+    def __str__(self):
+        return f"({self.nome_produto}, {self.valor})"

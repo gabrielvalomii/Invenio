@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from .models import User
+from .models import User, Produto
 from django.contrib.auth.hashers import make_password, check_password
 import json
 from django.utils import timezone
@@ -113,6 +113,61 @@ def deletar_user(request, id):
     return render (request, 'cadastro.html')
     
         
+@csrf_exempt
+def produto(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            nome_produto = data.get('nome_produto')
+            quantidade = data.get('quantidade')
+            valor = data.get('valor')
+            if not nome_produto or not quantidade or not valor:
+                return JsonResponse({'erros': 'Todos os campos são obrigatórios.'}, status=400)
+            produto = Produto.objects.create(
+                nome_produto = nome_produto,
+                quantidade = quantidade,
+                valor = valor
+            )
+            return JsonResponse ({'message': 'Produto criado com sucesso.', 'id':produto.id, 'nome_produto': produto.nome_produto, 'quantidade': produto.quantidade, 'valor': produto.valor}, status=201)
+        except Exception as e:
+            return JsonResponse({'erros': str(e)}, status=400)
+    return JsonResponse({'erros': 'Método não permitido.'}, status=405)
 
+@csrf_exempt
+def editar_produto(request, id):
+    if request.method in ['PUT', 'PATCH', 'POST']:
+        try:
+            data = json.loads(request.body)
+            produto = Produto.objects.filter(id=id).first()
+            if not produto:
+                return JsonResponse({'erros': 'Produto não encontrado.'}, status=404)
+            quantidade = data.get('quantidade')
+            valor = data.get('valor')
+            if quantidade > 0:
+                Produto.quantidade -= quantidade
+                return JsonResponse({'message': 'Produto atualizado com sucesso.', 'id':produto.id, 'nome_produto': produto.nome_produto, 'quantidade': produto.quantidade, 'valor': produto.valor}, status=200)
+            if valor:
+                Produto.valor = valor
+                return JsonResponse({'message': 'Produto atualizado com sucesso.', 'id':produto.id, 'nome_produto': produto.nome_produto, 'quantidade': produto.quantidade, 'valor': produto.valor}, status=200)
+            produto.save()
+        except Exception as e:
+            return JsonResponse({'erros': str(e)}, status=400)
+    return JsonResponse({'erros': 'Método não permitido.'}, status=405)
+
+@csrf_exempt
+def deletar_produto(request, id):
+    if request.method in ['DELETE', 'POST']:
+        try:
+            produto = Produto.objects.filter(id=id).first()
+            if not produto:
+                return JsonResponse({'erros': 'Produto não encontrado.'}, status=404)
+            produto.delete()
+            return JsonResponse({'message': 'Produto deletado com sucesso.'}, status=200)
+        except Exception as e:
+            return JsonResponse({'erros': str(e)}, status=400)
+    return JsonResponse({'erros': 'Método não permitido.'}, status=405)
+
+                
+            
             
         
