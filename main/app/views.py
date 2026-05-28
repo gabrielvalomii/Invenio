@@ -281,18 +281,7 @@ def deletar_usuario(request, id):
     user.delete()
     return Response({
         'message': 'Usuário deletado com sucesso.'
-    }, status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-def listar_usuarios(request):
-    """
-    Endpoint para listar todos os usuários
-    GET /api/usuarios/
-    """
-    users = User.objects.all()
-    serializer = UserSerializer(users, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)         
+    }, status=status.HTTP_200_OK)       
             
             
         
