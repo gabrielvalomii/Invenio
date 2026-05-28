@@ -9,8 +9,8 @@ class UserSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = User
-        fields = ['id', 'nome', 'email', 'CNPJ', 'criado_em', 'atualizado_em']
-        read_only_fields = ['id', 'criado_em', 'atualizado_em']
+        fields = ['id', 'nome', 'email', 'CNPJ']
+        read_only_fields = ['id', 'CNPJ']
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
@@ -35,11 +35,11 @@ class UserCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Email já cadastrado.")
         return value
     
-    def validate(self, data):
+    def validate(self, value):
         """Validação cruzada - verifica se CNPJ já existe"""
-        if User.objects.filter(CNPJ=data.get('CNPJ')).exists():
+        if User.objects.filter(CNPJ=value).exists():
             raise serializers.ValidationError({"CNPJ": "CNPJ já cadastrado."})
-        return data
+        return value
     
     def create(self, validated_data):
         """Cria usuário com senha hashada"""
