@@ -13,22 +13,19 @@ from .serializersproduto import (
 def criar_produto(request):
     
     serializer = ProdutoCreateSerializer(data=request.data)
-    if serializer.is_valid is True:
+    if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['PUT', 'PATCH'])
 def update_produto(request, id):
-    
-    
     try:
-        Produto = Produto.objects.get(id=id)
+        produto = Produto.objects.get(id=id)
     except Produto.DoesNotExist:
         return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
-    
-    serializer = ProdutoUpdateSerializer(data=request.data)
-    if serializer.is_valid is True:
+    serializer = ProdutoUpdateSerializer(produto, data=request.data, partial=True)
+    if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
