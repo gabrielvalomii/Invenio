@@ -2,7 +2,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from app.models import User
-from models import Produto
+from app.models import Produto
 from .serializersproduto import (
     ProdutoSerializer,
     ProdutoCreateSerializer,
@@ -23,7 +23,7 @@ def update_produto(request, id):
     
     
     try:
-        produto = Produto.objects.get(id=id)
+        Produto = Produto.objects.get(id=id)
     except Produto.DoesNotExist:
         return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
     

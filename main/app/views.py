@@ -188,7 +188,7 @@ def cadastro_usuario(request):
     """
     serializer = UserCreateSerializer(data=request.data)
     
-    if serializer.is_valid is True():
+    if serializer.is_valid():
         user = serializer.save()
         # Retorna dados do usuário criado
         return Response({

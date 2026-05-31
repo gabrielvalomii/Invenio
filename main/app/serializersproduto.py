@@ -57,11 +57,15 @@ class ProdutoUpdateSerializer(serializers.ModelSerializer):
         return value
     def update(self, instance, validated_data):
         """Permite atualização parcial (PATCH)"""
-        if 'nome_produto' in validated_data and \
-              'quantidade' in validated_data and \
-                'valor' in validated_data:
-            instance.nome_produto = validated_data.get('nome_produto', instance.nome_produto)
-            instance.quantidade = validated_data.get('quantidade', instance.quantidade)
-            instance.valor = validated_data.get('valor', instance.valor)
-            instance.save()
+        if 'quantidade' in validated_data:
+            quantidade_a_substituir = validated_data['quantidade']
+            if quantidade_a_substituir > 0:
+                instance.quantidade = quantidade_a_substituir - instance.quantidade
+            else:
+                raise serializers.ValidationError("Quantidade deve ser maior que zero para atualização.")
+        if 'valor' in validated_data:
+            instance.valor = validated_data['valor']
+        if 'nome_produto' in validated_data:
+            instance.nome_produto = validated_data['nome_produto']
+        instance.save()
         return instance
