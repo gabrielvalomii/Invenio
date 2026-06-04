@@ -32,8 +32,7 @@ class ProdutoCreateSerializer(serializers.ModelSerializer):
         d = enchant.Dict("pt_BR")
         if not d.check(value):
             raise serializers.ValidationError("Nome do produto contém palavras inválidas.")
-        return value
-        return super().validate(validade_data)
+        return super().validate(value)
 
 class ProdutoUpdateSerializer(serializers.ModelSerializer):
     """Serializer para atualizar produtos"""
@@ -57,10 +56,14 @@ class ProdutoUpdateSerializer(serializers.ModelSerializer):
         return value
     def update(self, instance, validated_data):
         """Permite atualização parcial (PATCH)"""
+        request = self.context.get('request')
+        action = request.query_params.get('action') if request else None
         if 'quantidade' in validated_data:
             quantidade_a_substituir = validated_data['quantidade']
-            if quantidade_a_substituir > 0:
+            if action == 'subtrair' and quantidade_a_substituir > 0:
                 instance.quantidade = quantidade_a_substituir - instance.quantidade
+            if action == ' adicionar' and quantidade_a_substituir > 0:
+                instance.quantidade = quantidade_a_substituir + instance.quantidade
             else:
                 raise serializers.ValidationError("Quantidade deve ser maior que zero para atualização.")
         if 'valor' in validated_data:

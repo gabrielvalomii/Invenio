@@ -24,7 +24,7 @@ def update_produto(request, id):
         produto = Produto.objects.get(id=id)
     except Produto.DoesNotExist:
         return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
-    serializer = ProdutoUpdateSerializer(produto, data=request.data, partial=True)
+    serializer = ProdutoUpdateSerializer(produto, data=request.data, partial=True, context={'request': request})
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -38,6 +38,4 @@ def delete_produto(request, id):
         return Response({"error": "Produto não encontrado."}, status=status.HTTP_404_NOT_FOUND)
     
     produto.delete()
-    return Response(status=status.HTTP_204_NO_CONTENT)
-        
-        
+    return Response(status=status.HTTP_204_NO_CONTENT)      
