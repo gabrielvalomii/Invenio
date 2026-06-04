@@ -11,7 +11,7 @@ class User(models.Model):
 
 class Produto(models.Model):
     nome_produto = models.CharField(max_length=255)
-    quantidade = models.IntegerField()
+    quantidade = models.IntegerField(min_length=1)
     valor = models.DecimalField(max_digits=10, decimal_places=2)
     
     def __str__(self):
